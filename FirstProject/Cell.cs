@@ -45,7 +45,7 @@ namespace FirstProject
 
         public virtual void Process()
         {
-
+            //TODO: process
         }
 
         protected virtual Cell Reproduce(Coordinate coordinate)
@@ -64,21 +64,21 @@ namespace FirstProject
 
             Cell[] neightbors = new Cell[4];
 
-            Cell cell = null;
+            Cell cell;
 
-            if (image.Equals(westNeightbor))
+            if (westNeightbor.Equals(image))
             {
                 neightbors[neightborCount++] = West();
             }
-            if (image.Equals(southNeightbor)) 
+            if (southNeightbor.Equals(image)) 
             {
                 neightbors[neightborCount++] = South();
             }
-            if (image.Equals(northNeightbor))
+            if (northNeightbor.Equals(image))
             {
                 neightbors[neightborCount++] = North();
             }
-            if (image.Equals(eastNeightbor))
+            if (eastNeightbor.Equals(image))
             {
                 neightbors[neightborCount++] = East();
             }
@@ -97,19 +97,58 @@ namespace FirstProject
 
         protected Coordinate GetEmptyNeighborCoord()
         {
-            return GetNeighborWithImage('-').getOffset();
+            char westNeightbor = West().getImage();
+            char southNeightbor = South().getImage();
+            char northNeightbor = North().getImage();
+            char eastNeightbor = East().getImage();
+
+            char empty = '-';
+
+            Cell[] emptyNeightbors = new Cell[4];
+
+            Cell cell;
+
+            int count = 0;
+
+
+            if (westNeightbor.Equals(empty)) {
+                emptyNeightbors[count++] = West();
+            }
+            if (southNeightbor.Equals(empty))
+            {
+                emptyNeightbors[count++] = South();
+            }
+            if (northNeightbor.Equals(empty))
+            {
+                emptyNeightbors[count++] = North();
+            }
+            if (eastNeightbor.Equals(empty))
+            {
+                emptyNeightbors[count++] = East();
+            }
+
+            if (count != 0)
+            {
+                cell = emptyNeightbors[ocean.getRandom().Next(0, emptyNeightbors.Length - 1)];
+            }
+            else
+            {
+                cell = this;
+            }
+
+            return cell.getOffset();
         }
-        private Coordinate getEmptyPreyCoord()
+        protected Coordinate getPreyCoord()
         {
             return GetNeighborWithImage('f').getOffset();
         }
 
-        private Cell GetCellAt(Coordinate coordinate)
+        protected Cell GetCellAt(Coordinate coordinate)
         {
             return ocean.getCells()[coordinate.X, coordinate.Y];
         }
 
-        private void AssignCellAt(Coordinate coordinate, Cell cell)
+        protected void AssignCellAt(Coordinate coordinate, Cell cell)
         {
             ocean.getCells()[coordinate.X, coordinate.Y] = cell;
         }
