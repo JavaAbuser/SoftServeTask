@@ -22,6 +22,10 @@ namespace FirstProject
             this.ocean = ocean;
         }
 
+        public Ocean getOcean() {
+            return ocean;
+        }
+
         public Coordinate getOffset() {
             return offset;
         }
@@ -43,14 +47,12 @@ namespace FirstProject
             Console.Write(image);
         }
 
-        public virtual void Process()
-        {
-            //TODO: process
+        public virtual void Process() 
+        {    
         }
 
-        protected virtual Cell Reproduce(Coordinate coordinate)
+        protected virtual void Reproduce(Coordinate coordinate)
         {
-            return new Cell(coordinate);
         }
 
         private Cell GetNeighborWithImage(char image)
@@ -85,7 +87,7 @@ namespace FirstProject
 
             if (neightborCount != 0)
             {
-                cell = neightbors[ocean.getRandom().Next(0, neightbors.Length - 1)];
+                cell = neightbors[ocean.getRandom().Next(0, neightborCount - 1)];
             }
             else {
                 cell = this;
@@ -129,7 +131,7 @@ namespace FirstProject
 
             if (count != 0)
             {
-                cell = emptyNeightbors[ocean.getRandom().Next(0, emptyNeightbors.Length - 1)];
+                cell = emptyNeightbors[ocean.getRandom().Next(0, count - 1)];
             }
             else
             {
@@ -145,24 +147,24 @@ namespace FirstProject
 
         protected Cell GetCellAt(Coordinate coordinate)
         {
-            return ocean.getCells()[coordinate.X, coordinate.Y];
+            return ocean.getCells()[coordinate.getX(), coordinate.getY()];
         }
 
         protected void AssignCellAt(Coordinate coordinate, Cell cell)
         {
-            ocean.getCells()[coordinate.X, coordinate.Y] = cell;
+            ocean.getCells()[coordinate.getX(), coordinate.getY()] = cell;
         }
 
         private Cell East()
         {
             Cell cell = this;
-            if (this.getOffset().X == ocean.getNumRows() - 1)
+            if (getOffset().getX() == ocean.getNumRows() - 1)
             {
                 cell = this;
             }
             else 
             {
-                Coordinate coordinate = new Coordinate(this.getOffset().X + 1, this.getOffset().Y);
+                Coordinate coordinate = new Coordinate(getOffset().getX() + 1, getOffset().getY());
                 cell = GetCellAt(coordinate);
             }
 
@@ -172,12 +174,12 @@ namespace FirstProject
         private Cell West()
         {
             Cell cell = this;
-            if (this.getOffset().X == 0)
+            if (getOffset().getX() == 0)
             {
                 cell = this;
             }
             else {
-                Coordinate coordinate = new Coordinate(this.getOffset().X - 1, this.getOffset().Y);
+                Coordinate coordinate = new Coordinate(getOffset().getX() - 1, getOffset().getY());
                 cell = GetCellAt(coordinate);
             }
 
@@ -187,13 +189,13 @@ namespace FirstProject
         private Cell North()
         {
             Cell cell = this;
-            if (this.getOffset().Y == 0)
+            if (getOffset().getY() == 0)
             {
                 cell =  this;
             }
             else
             {
-                Coordinate coordinate = new Coordinate(this.getOffset().X, this.getOffset().Y - 1);
+                Coordinate coordinate = new Coordinate(getOffset().getX(), getOffset().getY() - 1);
                 cell = GetCellAt(coordinate);
             }
 
@@ -203,13 +205,13 @@ namespace FirstProject
         private Cell South()
         {
             Cell cell = this;
-            if (this.getOffset().Y == ocean.getNumColumns() - 1)
+            if (getOffset().getY() == ocean.getNumColumns() - 1)
             {
                 cell = this;
             }
             else
             {
-                Coordinate coordinate = new Coordinate(this.getOffset().X, this.getOffset().Y + 1);
+                Coordinate coordinate = new Coordinate(getOffset().getX(), getOffset().getY() + 1);
                 cell = GetCellAt(coordinate);
             }
 
