@@ -8,37 +8,51 @@ namespace FirstProject
 {
     internal class Prey : Cell
     {
-        private new Ocean ocean1 = new Ocean();
+        private const int DefaultTimeToReproduce = 6;
+
         protected int timeToReproduce;
-        public Prey(int timeToReproduce = 6) : base(new Coordinate(0, 0)) {
+
+        public Prey(Coordinate coordinate, int timeToReproduce = DefaultTimeToReproduce) : base(coordinate)
+        {
+            setImage('f');
             this.timeToReproduce = timeToReproduce;
-            image = 'f';
         }
+
+        public override void Process()
+        {
+
+            Coordinate coordinate = GetEmptyNeighborCoord();
+            Coordinate preyCoordinate = GetEmptyNeighborCoord();
+
+            if (timeToReproduce <= 0)
+            {
+                Reproduce(preyCoordinate);
+                return;
+            }
+            else
+            {
+                MoveFrom(getOffset(), coordinate);
+                timeToReproduce--;
+            }
+
+        }
+
         protected void MoveFrom(Coordinate from, Coordinate to)
         {
-            Cell cell = null;
-            if (from != to) {
-                cell = getCellAt(to);
+            if ((from.getX() != to.getX() || from.getY() != to.getY())
+                    || (from.getX() != to.getX() & from.getY() != to.getY()))
+            {
                 setOffset(to);
-                assignCellAt(to, this);
-                if (timeToReproduce <= 0)
-                {
-                    timeToReproduce = 6;
-                    assignCellAt(from, Reproduce(from));
-                }
-                else {
-                    assignCellAt(from, new Cell(from));
-                }
+
+                AssignCellAt(to, this);
+                AssignCellAt(from, new Cell(from));
             }
         }
 
-        public virtual Cell Reproduce(Coordinate coordinate)
+        protected override void Reproduce(Coordinate coordinate)
         {
-            return getCellAt(coordinate);
-        }
-
-        protected override void Process() {
-            this.timeToReproduce--;
+            ocean.numPrey++;
+            AssignCellAt(coordinate, new Prey(coordinate));
         }
     }
 }
