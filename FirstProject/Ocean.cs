@@ -13,13 +13,15 @@ namespace FirstProject
 
         private int numRows;
         private int numColumns;
-        private int numPrey;
-        private int numPredators;
+        private int numPreyEaten;
         private int numObstacles;
         private int numOperations;
         private Random random = new Random();
         private Cell[,] cells;
         private int size;
+
+        public int numPredators;
+        public int numPrey;
 
         public Ocean()
         {
@@ -34,8 +36,8 @@ namespace FirstProject
             return numRows;
         }
 
-        private void setNumRows(int rowsCount) {
-            if (rowsCount > 25 || rowsCount < 0)
+        public void setNumRows(int rowsCount) {
+            if (rowsCount > DefaultNumRows || rowsCount < 0)
             {
                 numRows = DefaultNumRows;
                 throw new InvalidInputException();
@@ -51,9 +53,9 @@ namespace FirstProject
             return numColumns;
         }
 
-        private void setNumColumns(int columnsCount)
+        public void setNumColumns(int columnsCount)
         {
-            if (columnsCount > 70 || columnsCount < 0)
+            if (columnsCount > DefaultNumColumns || columnsCount < 0)
             {
                 numColumns = DefaultNumColumns;
                 throw new InvalidInputException();
@@ -69,7 +71,7 @@ namespace FirstProject
             return numPrey;
         }
 
-        private void setNumPrey(int preyCount)
+        public void setNumPrey(int preyCount)
         {
             if (preyCount < 0 || preyCount > size - numObstacles)
             {
@@ -82,12 +84,20 @@ namespace FirstProject
             }
         }
 
+        public int getNumPreyEaten() {
+            return numPreyEaten;
+        }
+
+        public void setNumPreyEaten(int count) {
+            numPreyEaten = count;
+        }
+
         public int getNumPredators()
         {
             return numPredators;
         }
 
-        private void setNumPredators(int predatorsCount)
+        public void setNumPredators(int predatorsCount)
         {
             if (predatorsCount < 0 || predatorsCount > size - numObstacles)
             {
@@ -104,7 +114,7 @@ namespace FirstProject
             return numObstacles;
         }
 
-        private void setNumObstacles(int obstaclesCount) {
+        public void setNumObstacles(int obstaclesCount) {
             if (obstaclesCount > size || obstaclesCount < 0)
             {
                 numObstacles = DefaultNumObstacles;
@@ -120,10 +130,14 @@ namespace FirstProject
             return numOperations;
         }
 
-        private void setNumOperations(int numOperations) {
-            if (numOperations < 0 || numOperations > 1000) {
+        public void setNumOperations(int numOperations) {
+            if (numOperations < 0 || numOperations > 1000)
+            {
                 this.numOperations = DefaultNumOperations;
                 throw new InvalidInputException();
+            }
+            else {
+                this.numOperations = numOperations;
             }
         }
 
@@ -141,41 +155,24 @@ namespace FirstProject
 
             try
             {
-                Console.Write("Enter the number of obstacles: ");
-                setNumObstacles(Convert.ToInt32(Console.ReadLine()));
-
-                Console.Write("Enter the number of predators: ");
-                setNumPredators(Convert.ToInt32(Console.ReadLine()));
-
-                Console.Write("Enter the number of prey: ");
-                setNumPrey(Convert.ToInt32(Console.ReadLine()));
+                ViewResolver.EnterNumOfEntities(this);
             }
             catch (InvalidInputException exception) {
                 Console.WriteLine(exception.getMessage());
             }
 
-            Console.WriteLine("\nNumber of obstacles is " + numObstacles);
-            Console.WriteLine("Number of predators is " + numPredators);
-            Console.WriteLine("Number of prey is " + numPrey);
+            ViewResolver.PrintInfo(this);
 
             AddObstacles();
             AddPredators();
             AddPrey();
-
-            DisplayStats(0);
-            DisplayCells();
-            DisplayBorder();
         }
 
         private void AddEmptyCells()
         {
             try
             {
-                Console.Write("Enter the count of rows: ");
-                setNumRows(Convert.ToInt32(Console.ReadLine()));
-
-                Console.Write("Enter the count of columns: ");
-                setNumColumns(Convert.ToInt32(Console.ReadLine()));
+                ViewResolver.EnterNumOfRowsAndColumns(this);
             }
             catch (InvalidInputException exception) {
                 Console.WriteLine(exception.getMessage());
@@ -200,7 +197,7 @@ namespace FirstProject
             for (int i = 0; i < numObstacles; i++)
             {
                 emptyCell = GetEmptyCellCoord();
-                cells[emptyCell.X, emptyCell.Y] = new Obstacle(emptyCell);
+                cells[emptyCell.getX(), emptyCell.getY()] = new Obstacle(emptyCell);
             }
         }
 
@@ -210,7 +207,7 @@ namespace FirstProject
             for (int i = 0; i < numPredators; i++)
             {
                 emptyCell = GetEmptyCellCoord();
-                cells[emptyCell.X, emptyCell.Y] = new Predator(emptyCell);
+                cells[emptyCell.getX(), emptyCell.getY()] = new Predator(emptyCell);
             }
         }
 
@@ -220,7 +217,7 @@ namespace FirstProject
             for (int i = 0; i < numPrey; i++)
             {
                 emptyCell = GetEmptyCellCoord();
-                cells[emptyCell.X, emptyCell.Y] = new Prey(emptyCell);
+                cells[emptyCell.getX(), emptyCell.getY()] = new Prey(emptyCell);
             }
         }
 
@@ -250,8 +247,7 @@ namespace FirstProject
                 }
                 else if (column == 0)
                 {
-                    Console.WriteLine();
-                    Console.Write(new String(' ', 30));
+                    Console.Write(new String(' ', 50));
                     Console.Write("*");
                 }
                 else
@@ -265,19 +261,18 @@ namespace FirstProject
         {
             for (int row = 0; row < numRows; row++)
             {
+                Console.Write(new String(' ', 50));
                 for (int column = 0; column < numColumns; column++)
                 {
                     cells[row, column].Display();
                 }
+                Console.Write("\n");
             }
         }
 
-        private void DisplayStats(int iteration)
+        private void DisplayStats(int operation)
         {
-            Console.WriteLine("\nIteration number: " + iteration++);
-            Console.WriteLine("Number of obstacles: " + numObstacles);
-            Console.WriteLine("Number of predators: " + numPredators);
-            Console.WriteLine("Number of prey: " + numPrey);
+            ViewResolver.PrintInfo(this);
 
             DisplayBorder();
         }
@@ -286,23 +281,24 @@ namespace FirstProject
         {
             try
             {
-                Console.WriteLine("Enter the number of operations: ");
-                setNumOperations(Convert.ToInt32(Console.ReadLine()));
+                ViewResolver.EnterOperations(this);
             }
             catch (InvalidInputException exception) {
                 Console.WriteLine(exception.getMessage());
             }
 
-            Console.WriteLine("The number of operations: " + numOperations);
+            ViewResolver.PrintNumOfOperations(this);
 
-            for (int operation = 0; operation < numOperations; operation++) { 
+            for (int operation = 1; operation <= numOperations; operation++) {
                 if (numPredators > 0 && numPrey > 0)
                 {
                     for (int row = 0; row < numRows; row++)
                     {
                         for (int column = 0; column < numColumns; column++)
                         {
-                            cells[row, column].Process();
+                            Cell cell = cells[row, column];
+                            cell.setOcean(this);
+                            cell.Process();
                         }
                     }
 
@@ -311,6 +307,8 @@ namespace FirstProject
                     DisplayBorder();
                 }
             }
+
+            Console.ReadLine();
         }
     }
 }
